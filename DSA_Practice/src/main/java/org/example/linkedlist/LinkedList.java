@@ -225,15 +225,15 @@ public class LinkedList {
         myLinkedList.append(20);
         myLinkedList.printLinkedList();
 
-//        myLinkedList.prepend(5);
-//        myLinkedList.printLinkedList();
+        myLinkedList.prepend(5);
+        myLinkedList.printLinkedList();
 
-//        System.out.println("remove last item ---> "+ myLinkedList.removeLast().value);
-//        System.out.println("remove last item  if list has 1 value---> "+ myLinkedList.removeLast().value);
-//        System.out.println("remove last item if list is empty ---> "+ myLinkedList.removeLast());
-//        System.out.println("remove first item ---> "+ myLinkedList.removeFirst().value);
-//        System.out.println("remove first item  if list has 1 value---> "+ myLinkedList.removeFirst().value);
-//        System.out.println("remove first item if list is empty ---> "+ myLinkedList.removeFirst());
+        System.out.println("remove last item ---> "+ myLinkedList.removeLast().value);
+        System.out.println("remove last item  if list has 1 value---> "+ myLinkedList.removeLast().value);
+        System.out.println("remove last item if list is empty ---> "+ myLinkedList.removeLast());
+        System.out.println("remove first item ---> "+ myLinkedList.removeFirst().value);
+        System.out.println("remove first item  if list has 1 value---> "+ myLinkedList.removeFirst().value);
+        System.out.println("remove first item if list is empty ---> "+ myLinkedList.removeFirst());
         System.out.println("Get item at index 1 --> "+ myLinkedList.get(1).value);
         myLinkedList.printLinkedList();
 
