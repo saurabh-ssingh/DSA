@@ -47,6 +47,7 @@ public class LinkedList {
 
     /**
      * Prints the value of the tail node of the linked list.
+     *
      */
     public void printTail() {
         System.out.println("Tail --> " + tail.value);
