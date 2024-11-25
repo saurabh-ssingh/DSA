@@ -1106,3 +1106,84 @@ This demonstrates that `person2` is a copy of `person1`, with the same values fo
 
 - **Shallow Copy vs. Deep Copy**: If your class contains mutable objects (e.g., arrays or custom objects), the default copy constructor will only create a shallow copy. For a deep copy (where nested objects are also copied), you need to manually handle copying of these nested objects within the copy constructor.
 - **Default Copy Behavior**: If you do not define a copy constructor, Java uses the default behavior of object copying (which performs a shallow copy).
+
+## In Java interface can we create concrete method?
+In Java, interfaces cannot have concrete methods in the traditional sense like classes do. However, since Java 8, interfaces can have methods with a concrete implementation by using the `default` or `static` keywords.
+
+### Key Points:
+
+1. **Default Methods**:
+   - A default method is a method in an interface that has a concrete implementation. It is declared using the `default` keyword.
+   - Default methods allow you to add new functionality to interfaces without breaking the existing implementations.
+
+   ```java
+   interface MyInterface {
+       default void defaultMethod() {
+           System.out.println("This is a default method in the interface.");
+       }
+   }
+   ```
+
+2. **Static Methods**:
+   - Static methods in interfaces are similar to static methods in classes. They belong to the interface rather than instances of the interface and can be called using the interface name.
+   - Static methods in interfaces are declared using the `static` keyword.
+
+   ```java
+   interface MyInterface {
+       static void staticMethod() {
+           System.out.println("This is a static method in the interface.");
+       }
+   }
+   ```
+
+3. **Abstract Methods**:
+   - By default, methods in interfaces are abstract (unless they are marked as `default` or `static`). Abstract methods do not have a body and must be implemented by the classes that implement the interface.
+
+   ```java
+   interface MyInterface {
+       void abstractMethod();  // Abstract method, must be implemented by the implementing class
+   }
+   ```
+
+### What You **Cannot** Do:
+- You cannot have a regular (non-static, non-default) method with a concrete implementation in an interface. All non-default, non-static methods in interfaces must be abstract.
+
+### Example:
+
+```java
+interface MyInterface {
+    void abstractMethod(); // Abstract method, no implementation
+
+    default void defaultMethod() { // Default method with implementation
+        System.out.println("This is a default method.");
+    }
+
+    static void staticMethod() { // Static method with implementation
+        System.out.println("This is a static method.");
+    }
+}
+
+class MyClass implements MyInterface {
+    @Override
+    public void abstractMethod() {
+        System.out.println("Implemented abstract method.");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        MyClass obj = new MyClass();
+        obj.abstractMethod(); // Calls the implemented abstract method
+        obj.defaultMethod();  // Calls the default method
+
+        MyInterface.staticMethod(); // Calls the static method using the interface name
+    }
+}
+```
+
+In this example:
+- `abstractMethod` is an abstract method with no implementation in the interface and must be implemented by `MyClass`.
+- `defaultMethod` is a default method with a concrete implementation in the interface that can be called by instances of implementing classes.
+- `staticMethod` is a static method with a concrete implementation that is called using the interface name.
+
+So, while you can't have "concrete methods" in the sense of regular class methods, you can have `default` and `static` methods with concrete implementations in interfaces.
