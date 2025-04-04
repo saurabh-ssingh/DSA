@@ -243,5 +243,21 @@ In `psql`, there are various **meta-commands** (also called **backslash commands
    \d+ my_table
    ```
 
-### Summary:
-These meta-commands provide shortcuts for managing PostgreSQL databases and executing SQL queries more efficiently within `psql`. They allow you to perform tasks such as navigating databases, managing users, viewing table structures, and formatting query results.
+### **Difference Between Port and Host**
+
+| Feature  | Host | Port |
+|----------|------|------|
+| **Definition** | The machine (computer/server) where services or applications run. | A communication endpoint on a host that is used to send or receive data. |
+| **Example** | `192.168.1.10` (IP address) or `example.com` (domain) | `5432` (PostgreSQL), `80` (HTTP), `443` (HTTPS) |
+| **Function** | Identifies a device on a network. | Identifies a specific service running on a host. |
+| **Analogy** | A building address. | A specific apartment number inside the building. |
+| **Scope** | Represents an entire machine. | Represents a single application or service on that machine. |
+
+### **Example in Context**
+If you are connecting to a PostgreSQL database running on a remote server, you would use:
+```bash
+psql -h 192.168.1.10 -p 5432 -U myuser -d mydb
+```
+- `-h 192.168.1.10`: **Host** (The server where PostgreSQL is running)
+- `-p 5432`: **Port** (The PostgreSQL service listening on this port)
+

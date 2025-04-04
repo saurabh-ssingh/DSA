@@ -879,4 +879,282 @@ Cloud computing is generally categorized into three main types based on the serv
 | **Community**  | Shared by specific community     | Healthcare clouds           |
 
 ---
+# AWS Storage Services Overview
+
+This document provides an overview of Amazon EC2 Instance Store, Amazon Elastic File System (EFS), and Amazon FSx, including their features, use cases, and configuration details.
+
+---
+
+## 1. Amazon EC2 Instance Store
+
+### **Overview**
+Amazon EC2 Instance Store is a temporary, physically attached storage for EC2 instances that offers low-latency, high-speed access.
+
+### **Key Features**
+- **Ephemeral Storage**: Data is lost when the instance is stopped, terminated, or crashes.
+- **Performance**: Low-latency, high-speed access.
+- **Not Persistent**: Unlike EBS volumes, data does not persist after instance shutdown.
+
+### **How to Check Instance Store Availability**
+- **AWS Console**: Go to **Instances** > Select the instance > **Storage** tab.
+- **Command Line**: Use `lsblk` or `df -h`:
+  ```bash
+  lsblk
+  ```
+
+### **Accessing Local Instance Store**
+1. **Format the disk**:
+   ```bash
+   sudo mkfs.ext4 /dev/xvdb
+   ```
+2. **Create a directory** for mounting:
+   ```bash
+   sudo mkdir /mnt/instance-store
+   ```
+3. **Mount the disk**:
+   ```bash
+   sudo mount /dev/xvdb /mnt/instance-store
+   ```
+
+### **Use Cases**
+- Temporary data (e.g., cache or buffers).
+- High-speed storage for applications requiring fast I/O.
+
+### **Data Backup Considerations**
+Always store critical data in Amazon EBS, S3, or RDS to avoid data loss.
+
+---
+
+## 2. Amazon Elastic File System (EFS)
+
+### **Overview**
+Amazon EFS is a fully managed, scalable, and shared file storage solution for use with Amazon EC2 instances.
+
+### **Key Features**
+1. **Scalability**: Automatically grows and shrinks based on file additions/removals.
+2. **Multiple Access**: Multiple EC2 instances can concurrently access the file system.
+3. **POSIX Compliance**: Familiar file system semantics.
+4. **High Availability**: Designed for 99.999999999% durability.
+5. **Performance Modes**:
+   - **General Purpose**: Default, suitable for most applications.
+   - **Max I/O**: For higher throughput with slightly higher latencies.
+6. **Throughput Modes**:
+   - **Bursted**: Suitable for most workloads.
+   - **Provisioned**: Allows setting specific throughput.
+
+### **Setup Steps**
+1. **Create a File System**:
+   - Navigate to **EFS** in the AWS Console.
+   - Click **Create File System** and follow the wizard.
+2. **Mount the File System**:
+   - Install EFS utilities:
+     ```bash
+     sudo yum install -y amazon-efs-utils
+     ```
+   - Mount the file system:
+     ```bash
+     sudo mount -t efs fs-XXXXXXX:/ /mnt/efs
+     ```
+3. **Automount on Reboot**:
+   Add an entry to `/etc/fstab`:
+   ```
+   fs-XXXXXXX:/ /mnt/efs efs defaults,_netdev 0 0
+   ```
+
+### **Use Cases**
+- Shared storage for web servers or enterprise applications.
+- Big data analytics.
+- Persistent storage for containerized applications (e.g., Amazon ECS).
+
+### **Pricing**
+Pricing is based on:
+- **Storage used** (GB/month).
+- **Access patterns** (e.g., standard vs. infrequent access).
+
+---
+
+## 3. Amazon FSx
+
+### **Overview**
+Amazon FSx is a fully managed service that provides high-performance file systems for Windows and Linux-based workloads. AWS offers multiple types of FSx file systems.
+
+### **Amazon FSx File System Types**
+1. **FSx for Windows File Server**:
+   - Built on Microsoft Windows Server.
+   - Supports **SMB (Server Message Block)** protocol.
+   - Integrates with **Active Directory (AD)**.
+   - Use Cases: Enterprise applications, file sharing, Microsoft SQL Server.
+
+2. **FSx for Lustre**:
+   - High-performance storage for compute-intensive workloads.
+   - Compatible with the Lustre open-source file system.
+   - Integrates with **Amazon S3**.
+   - Use Cases: Machine learning, big data analytics, media processing.
+
+3. **FSx for NetApp ONTAP**:
+   - Built on **NetApp ONTAP** software.
+   - Supports **NFS** and **SMB** protocols.
+   - Offers advanced data management features (e.g., snapshots, replication).
+   - Use Cases: Hybrid cloud storage, enterprise applications, disaster recovery.
+
+4. **FSx for OpenZFS**:
+   - Built on the **OpenZFS** file system.
+   - Provides snapshots, data compression, and cloning.
+   - Use Cases: Linux-based development, data analytics, business intelligence.
+
+### **Key Features**
+1. **Fully Managed**: AWS handles setup, patching, and maintenance.
+2. **High Availability**: File systems are designed for 99.9% availability.
+3. **Scalable**: Automatically adjusts to growing storage needs.
+4. **Access Control**: Integration with IAM and Active Directory.
+5. **Data Encryption**: Data at rest and in transit is encrypted using AWS KMS.
+
+### **Setup Steps**
+1. **Create a File System**:
+   - Navigate to **Amazon FSx** in the AWS Console.
+   - Choose the file system type (e.g., Windows, Lustre, NetApp ONTAP, or OpenZFS).
+   - Configure the file system options.
+
+2. **Mount the File System**:
+   - **Windows**: Use the `net use` command to mount the file system:
+     ```bash
+     net use X: \\fs-xxxx.amazonaws.com\share
+     ```
+   - **Linux**: Use NFS or SMB to mount the file system.
+
+### **Use Cases**
+- **Enterprise File Sharing**: Shared access across teams or departments.
+- **Data Analytics**: High-performance file systems for big data analytics.
+- **Machine Learning**: Scalable storage for machine learning workloads.
+- **Backup and Archiving**: Reliable and scalable backup solutions.
+
+---
+
+**Elastic Load Balancer (ELB)** in EC2 is a fully managed load balancing service provided by AWS. It helps distribute incoming traffic across multiple EC2 instances, ensuring better fault tolerance, availability, and scalability of applications. Here's how it works and its key features:
+
+---
+
+### **How Elastic Load Balancing (ELB) Works:**
+
+1. **Traffic Distribution:** ELB receives client requests and distributes them across multiple EC2 instances running in one or more Availability Zones (AZs).
+2. **Health Checks:** ELB continuously monitors the health of registered EC2 instances to ensure that traffic is only sent to healthy instances.
+3. **High Availability:** ELB can route traffic to instances in different AZs, improving application reliability and fault tolerance.
+4. **Scalability:** Automatically handles an increase or decrease in traffic load by adding or removing EC2 instances as needed.
+
+---
+
+### **Types of Elastic Load Balancers:**
+
+1. **Application Load Balancer (ALB):**
+   - Designed for HTTP and HTTPS traffic.
+   - Operates at Layer 7 (Application Layer) of the OSI model.
+   - Can route requests based on URL, host, headers, or query string.
+   - Supports WebSocket and SSL termination.
+
+2. **Network Load Balancer (NLB):**
+   - Operates at Layer 4 (Transport Layer).
+   - Handles TCP, UDP, and TLS traffic.
+   - Can process high volumes of traffic at low latencies.
+   - Ideal for real-time applications like gaming and financial services.
+
+3. **Classic Load Balancer (CLB):**
+   - Legacy option that supports HTTP, HTTPS, and TCP traffic.
+   - Operates at Layer 4 or Layer 7.
+   - Limited features compared to ALB and NLB.
+
+---
+
+### **Key Features:**
+
+- **Sticky Sessions:** Allows the load balancer to bind a client session to a specific EC2 instance to maintain stateful sessions.
+- **SSL Termination:** Offloads SSL/TLS decryption from EC2 instances to ELB.
+- **Cross-Zone Load Balancing:** Ensures that traffic is evenly distributed across all instances in all registered AZs.
+- **Security:** Integrates with AWS Certificate Manager (ACM) for SSL certificates and supports security groups and WAF (Web Application Firewall).
+- **Autoscaling Integration:** Automatically scales EC2 instances in and out based on load.
+- **Monitoring:** Integrated with Amazon CloudWatch to provide performance metrics and logs.
+
+---
+
+### **Benefits of Using ELB:**
+
+1. **Increased Availability:** ELB automatically reroutes traffic if an instance or AZ becomes unhealthy.
+2. **Fault Tolerance:** ELB ensures high fault tolerance by distributing traffic across healthy instances.
+3. **Scalability:** Automatically adapts to varying traffic levels, ensuring consistent performance.
+4. **Ease of Management:** ELB simplifies the task of managing multiple EC2 instances.
+
+---
+
+**Use Case Example:**  
+Imagine a web application running on three EC2 instances. ELB ensures that incoming user requests are evenly distributed among these instances. If one instance goes down, ELB automatically directs traffic to the healthy instances, maintaining availability for users.
+
+### **What is an Auto Scaling Group (ASG) in AWS?**
+
+An **Auto Scaling Group (ASG)** in AWS is a feature that automatically adjusts the number of EC2 instances in your application to maintain availability and performance. It helps in **scaling up** (adding instances) when demand increases and **scaling down** (removing instances) when demand decreases.
+
+---
+
+### **Key Components of an Auto Scaling Group:**
+
+1. **Launch Template or Launch Configuration**
+   - Defines the EC2 instance settings, such as AMI (Amazon Machine Image), instance type, key pair, security groups, and user data.
+   - Launch **Templates** are preferred over **Launch Configurations** because they support versioning.
+
+2. **Desired, Minimum, and Maximum Capacity**
+   - **Desired Capacity:** The number of instances the ASG tries to maintain.
+   - **Minimum Capacity:** The lowest number of instances that should always be running.
+   - **Maximum Capacity:** The highest number of instances that can be created when scaling up.
+
+3. **Scaling Policies**
+   - Define when and how the ASG scales based on conditions such as CPU utilization, request rate, or custom metrics.
+   - **Types of Scaling Policies:**
+      - **Target Tracking Scaling:** Adjusts capacity to keep a specific metric (e.g., CPU at 50% utilization).
+      - **Step Scaling:** Adds/removes instances in steps based on thresholds.
+      - **Scheduled Scaling:** Automatically scales up/down at predefined times.
+
+4. **Health Checks & Instance Replacement**
+   - Uses **EC2 health checks** or **Elastic Load Balancer (ELB) health checks** to detect unhealthy instances.
+   - Automatically replaces unhealthy instances with new ones.
+
+5. **Availability Zones (AZs) & Load Balancing**
+   - ASG can distribute instances across multiple **Availability Zones** for high availability.
+   - Can be integrated with **Elastic Load Balancer (ELB)** to distribute traffic evenly.
+
+---
+
+### **How Auto Scaling Works:**
+1. You define an **Auto Scaling Group** with a minimum, maximum, and desired number of instances.
+2. ASG continuously **monitors metrics** (like CPU usage or network traffic).
+3. If traffic increases beyond a threshold, ASG **automatically adds instances**.
+4. If traffic decreases, ASG **removes instances** to save costs.
+5. ASG **replaces unhealthy instances** automatically.
+
+---
+
+### **Benefits of Auto Scaling Groups:**
+✅ **High Availability:** Ensures your application has the right number of instances running at all times.  
+✅ **Cost Optimization:** Removes unused instances to reduce costs.  
+✅ **Automatic Recovery:** Replaces unhealthy instances without manual intervention.  
+✅ **Scalability:** Adjusts resources dynamically based on demand.  
+✅ **Improved Performance:** Ensures application performance remains optimal during traffic spikes.
+
+---
+
+### **Example Use Case:**
+- A web application receives **high traffic** during business hours and **low traffic** at night.
+- An **ASG with Target Tracking Scaling** automatically adds instances during peak hours and removes them at night to save costs.
+- If an instance fails, ASG replaces it automatically to maintain uptime.
+
+---
+
+### **How to Create an Auto Scaling Group (Basic Steps):**
+1. **Create a Launch Template** (or Launch Configuration) with EC2 instance details.
+2. **Define an Auto Scaling Group** and specify:
+   - Minimum, maximum, and desired instance counts.
+   - Availability Zones for deployment.
+   - Load balancer (if needed).
+3. **Set Scaling Policies** based on metrics (CPU, requests, etc.).
+4. **Monitor & Adjust Settings** using CloudWatch metrics.
+
+---
+
 
